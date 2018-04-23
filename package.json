@@ -1,7 +1,7 @@
 {
-    "name": "vscode-codespade",
-    "displayName": "vscode-codespade",
-    "description": "test",
+    "name": "vscode-symbolexplorer",
+    "displayName": "vscode-symbolexplorer",
+    "description": "A simple explorer view of the currently active file",
     "version": "0.0.1",
     "publisher": "nickdemayo",
     "engines": {
@@ -11,18 +11,43 @@
         "Other"
     ],
     "activationEvents": [
-        "onCommand:codespade.navigateSymbol"
+        "onCommand:symbolExplorer.navigateSymbol",
+        "onView:symbolExplorer"
     ],
-    "main": "./out/extension",
+    "main": "./out/src/extension",
     "contributes": {
         "commands": [
             {
-                "command": "codemade.navigateSymbol",
+                "command": "symbolExplorer.navigateSymbol",
                 "title": "Navigate to Symbol"
+            },
+            {
+                "command": "symbolExplorer.refresh",
+                "title": "Refresh",
+                "icon": {
+                    "light": "resources/light/refresh.svg",
+                    "dark": "resources/dark/refresh.svg"
+                }
             }
-        ]
+        ],
+        "views": {
+            "explorer": [
+                {
+                    "id": "symbolExplorer",
+                    "name": "Symbol Explorer"
+                }
+            ]
+        },
+        "menus": {
+            "view/title": [
+                {
+                    "command": "symbolExplorer.refresh",
+                    "when": "view == symbolExplorer",
+                    "group": "navigation"
+                }
+            ]
+        }
     },
-    "views": {},
     "scripts": {
         "vscode:prepublish": "npm run compile",
         "compile": "tsc -p ./",

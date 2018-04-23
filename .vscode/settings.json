@@ -21,14 +21,17 @@
         "azurenodelogpoints",
         "azurenodelogpointsnightly",
         "azuretools",
+        "symbol-explorer",
         "debugadapter",
         "etag",
         "logpoint",
         "mailto",
+        "navigate",
         "opencode",
         "repo",
         "repos",
         "runtimes",
+        "symbol",
         "vsce"
     ]
 }
