@@ -8,7 +8,7 @@ A simple vscode extension to provide and explorer view of the symbols in the act
 1. Symbols update automatically when your document is saved
 1. Refresh the list
 
-![](screenshots/_Extension_Development_Host__-_extension_ts_—_vscode-azureappservice.png)
+![screenshot](screenshots/_Extension_Development_Host__-_extension_ts_—_vscode-azureappservice.png)
 
 ## Requirements
 
@@ -20,7 +20,11 @@ Depending on what extension is providing the symbols for your file, you may have
 
 ## Release Notes
 
-### 1.0.0
+### 0.0.2
+
+Fix for [#1](https://github.com/sunmorgus/vscode-symbolexplorer/issues/1)
+
+### 0.0.1
 
 Initial release of `vscode-symbolexplorer`
 

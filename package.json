@@ -2,7 +2,7 @@
     "name": "vscode-symbolexplorer",
     "displayName": "vscode-symbolexplorer",
     "description": "A simple explorer view of the currently active file",
-    "version": "0.0.1",
+    "version": "0.0.2",
     "publisher": "nickdemayo",
     "engines": {
         "vscode": "^1.22.0"
