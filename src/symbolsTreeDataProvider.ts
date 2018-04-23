@@ -85,7 +85,7 @@ export class SymbolsTreeDataProvider implements vscode.TreeDataProvider<SymbolTr
     }
 
     private async getSymbolsForActiveEditor(): Promise<SymbolTreeViewItem[]> {
-        let symbolsTreeViewItems: SymbolTreeViewItem[];
+        let symbolsTreeViewItems: SymbolTreeViewItem[] = new Array<SymbolTreeViewItem>();
 
         if (this.editor && this.editor.document.uri) {
             let symbols: Array<vscode.SymbolInformation> | undefined = await vscode.commands.executeCommand<Array<vscode.SymbolInformation>>(

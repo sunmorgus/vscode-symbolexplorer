@@ -15,6 +15,10 @@
         "onView:symbolExplorer"
     ],
     "main": "./out/src/extension",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/sunmorgus/vscode-symbolexplorer.git"
+    },
     "contributes": {
         "commands": [
             {
