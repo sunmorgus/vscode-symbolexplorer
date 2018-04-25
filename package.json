@@ -1,7 +1,7 @@
 {
     "name": "vscode-symbolexplorer",
     "displayName": "vscode-symbolexplorer",
-    "description": "A simple explorer view of the currently active file",
+    "description": "A simple explorer view of the symbols in the currently active file",
     "version": "0.0.2",
     "publisher": "nickdemayo",
     "engines": {
@@ -62,6 +62,7 @@
     "devDependencies": {
         "@types/mocha": "^2.2.42",
         "@types/node": "^7.0.43",
+        "aqua": "^1.0.1",
         "tslint": "^5.8.0",
         "typescript": "^2.6.1",
         "vscode": "^1.1.6"
