@@ -18,15 +18,25 @@ The only requirement is having a document open that supports symbols.
 
 Depending on what extension is providing the symbols for your file, you may have to hit the refresh button after the extension has finished loading (for instance, with the C# extension, once omnisharp has finished loading your project)
 
+## Contributions
+
+1. Icon provided by [Font Awesome](https://fontawesome.com/icons/space-shuttle?style=solid) ([License](https://fontawesome.com/license))
+
 ## Release Notes
+
+### 0.0.3
+
+- Fix for [#2](https://github.com/sunmorgus/vscode-symbolexplorer/issues/2)
+- Added icon
+- Changed Display Name to 'Symbol Explorer'
 
 ### 0.0.2
 
-Fix for [#1](https://github.com/sunmorgus/vscode-symbolexplorer/issues/1)
+- Fix for [#1](https://github.com/sunmorgus/vscode-symbolexplorer/issues/1)
 
 ### 0.0.1
 
-Initial release of `vscode-symbolexplorer`
+- Initial release of `vscode-symbolexplorer`
 
 ## Todos:
 

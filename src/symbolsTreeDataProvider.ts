@@ -88,20 +88,31 @@ export class SymbolsTreeDataProvider implements vscode.TreeDataProvider<SymbolTr
         let symbolsTreeViewItems: SymbolTreeViewItem[] = new Array<SymbolTreeViewItem>();
 
         if (this.editor && this.editor.document.uri) {
-            let symbols: Array<vscode.SymbolInformation> | undefined = await vscode.commands.executeCommand<Array<vscode.SymbolInformation>>(
-                'vscode.executeDocumentSymbolProvider',
-                this.editor.document.uri
-            );
+            let symbols: Array<vscode.SymbolInformation> | undefined;
 
-            const toSymbol = (symbol: vscode.SymbolInformation): SymbolTreeViewItem => {
-                return new SymbolTreeViewItem(symbol.name, symbol.kind, symbol.location, vscode.TreeItemCollapsibleState.None, this.context, {
-                    command: 'symbolExplorer.navigateSymbol',
-                    title: '',
-                    arguments: [symbol.location.range]
-                });
+            try {
+                symbols = await vscode.commands.executeCommand<Array<vscode.SymbolInformation>>(
+                    'vscode.executeDocumentSymbolProvider',
+                    this.editor.document.uri
+                );
+            }
+            catch (e) {
+                console.log(e);
+                const errorSymbol = new SymbolTreeViewItem("Error occurred loading symbols", 0, undefined, vscode.TreeItemCollapsibleState.None, this.context);
+                symbolsTreeViewItems.push(errorSymbol);
             }
 
-            symbolsTreeViewItems = symbols.map(symbol => toSymbol(symbol));
+            if (symbols) {
+                const toSymbol = (symbol: vscode.SymbolInformation): SymbolTreeViewItem => {
+                    return new SymbolTreeViewItem(symbol.name, symbol.kind, symbol.location, vscode.TreeItemCollapsibleState.None, this.context, {
+                        command: 'symbolExplorer.navigateSymbol',
+                        title: '',
+                        arguments: [symbol.location.range]
+                    });
+                }
+
+                symbolsTreeViewItems = symbols.map(symbol => toSymbol(symbol));
+            }
         }
         else {
             const noSymbols = new SymbolTreeViewItem("No symbols found in file", 0, undefined, vscode.TreeItemCollapsibleState.None, this.context);
