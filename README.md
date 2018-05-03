@@ -24,6 +24,10 @@ Depending on what extension is providing the symbols for your file, you may have
 
 ## Release Notes
 
+### 0.0.4
+
+- Added Symbol Explorer to the Debug View
+
 ### 0.0.3
 
 - Fix for [#2](https://github.com/sunmorgus/vscode-symbolexplorer/issues/2)
