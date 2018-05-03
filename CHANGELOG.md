@@ -2,6 +2,14 @@
 
 All notable changes to the "vscode-symbol-explorer" extension will be documented in this file.
 
+## [0.0.6]
+
+- Fix for a bad merge
+
+## [0.0.5]
+
+- Added Symbol Explorer to the Debug View [#5](https://github.com/sunmorgus/vscode-symbolexplorer/issues/5)
+
 ## [0.0.3]
 
 - Fix for [#2](https://github.com/sunmorgus/vscode-symbolexplorer/issues/2)
