@@ -2,7 +2,7 @@
     "name": "vscode-symbolexplorer",
     "displayName": "Symbol Explorer",
     "description": "A simple explorer view of the symbols in the currently active editor",
-    "version": "0.0.5",
+    "version": "0.0.6",
     "publisher": "nickdemayo",
     "icon": "resources/space-shuttle.png",
     "engines": {
@@ -41,9 +41,27 @@
                     "light": "resources/light/refresh.svg",
                     "dark": "resources/dark/refresh.svg"
                 }
+            },
+            {
+                "command": "symbolExplorerDebug.navigateSymbol",
+                "title": "Navigate to Symbol"
+            },
+            {
+                "command": "symbolExplorerDebug.refresh",
+                "title": "Refresh",
+                "icon": {
+                    "light": "resources/light/refresh.svg",
+                    "dark": "resources/dark/refresh.svg"
+                }
             }
         ],
         "views": {
+            "debug": [
+                {
+                    "id": "symbolExplorerDebug",
+                    "name": "Symbol Explorer"
+                }
+            ],
             "explorer": [
                 {
                     "id": "symbolExplorer",
@@ -56,6 +74,11 @@
                 {
                     "command": "symbolExplorer.refresh",
                     "when": "view == symbolExplorer",
+                    "group": "navigation"
+                },
+                {
+                    "command": "symbolExplorerDebug.refresh",
+                    "when": "view == symbolExplorerDebug",
                     "group": "navigation"
                 }
             ]
