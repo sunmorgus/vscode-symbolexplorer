@@ -39,7 +39,7 @@ export class SymbolsTreeDataProvider implements vscode.TreeDataProvider<SymbolTr
     private autoRefresh: boolean = true;
     private editor: vscode.TextEditor;
 
-    constructor(private context: vscode.ExtensionContext) {
+    constructor(private context: vscode.ExtensionContext, private isDebugView: boolean) {
         vscode.window.onDidChangeActiveTextEditor(() => this.onActiveEditorChanged());
         vscode.workspace.onDidSaveTextDocument(() => this.onDocumentChanged());
         this.onActiveEditorChanged();
@@ -98,14 +98,14 @@ export class SymbolsTreeDataProvider implements vscode.TreeDataProvider<SymbolTr
             }
             catch (e) {
                 console.log(e);
-                const errorSymbol = new SymbolTreeViewItem("Error occurred loading symbols", 0, undefined, vscode.TreeItemCollapsibleState.None, this.context);
+                const errorSymbol = new SymbolTreeViewItem("No symbols found in file", 0, undefined, vscode.TreeItemCollapsibleState.None, this.context);
                 symbolsTreeViewItems.push(errorSymbol);
             }
 
             if (symbols) {
                 const toSymbol = (symbol: vscode.SymbolInformation): SymbolTreeViewItem => {
                     return new SymbolTreeViewItem(symbol.name, symbol.kind, symbol.location, vscode.TreeItemCollapsibleState.None, this.context, {
-                        command: 'symbolExplorer.navigateSymbol',
+                        command: this.isDebugView ? 'symbolExplorerDebug.navigateSymbol' : 'symbolExplorer.navigateSymbol',
                         title: '',
                         arguments: [symbol.location.range]
                     });

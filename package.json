@@ -2,7 +2,7 @@
     "name": "vscode-symbolexplorer",
     "displayName": "Symbol Explorer",
     "description": "A simple explorer view of the symbols in the currently active editor",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "publisher": "nickdemayo",
     "icon": "resources/space-shuttle.png",
     "engines": {
