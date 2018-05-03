@@ -24,7 +24,7 @@ Depending on what extension is providing the symbols for your file, you may have
 
 ## Release Notes
 
-### 0.0.4
+### 0.0.5
 
 - Added Symbol Explorer to the Debug View
 
