@@ -10,7 +10,13 @@ A simple vscode extension to provide and explorer view of the symbols in the act
 - Symbols update automatically when your document is saved
 - Refresh the list
 
+### Explorer View
+
 ![screenshot](screenshots/_Extension_Development_Host__-_extension_ts_—_vscode-azureappservice.png)
+
+### Activity Bar
+
+![screenshot](screenshots/_Extension_Development_Host__-_Startup_cs_—_symbolexplorer-screenshot-project.png)
 
 ## Configuration
 
