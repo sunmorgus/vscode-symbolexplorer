@@ -4,11 +4,18 @@ A simple vscode extension to provide and explorer view of the symbols in the act
 
 ## Features
 
-1. Lists all symbols in the active document
-1. Symbols update automatically when your document is saved
-1. Refresh the list
+- Views for Explorer, Debugger, and now a separate of it's own!
+- Lists all symbols in the active document
+- Symbols are grouped by container (i.e. methods within a class are grouped under that class)
+- Symbols update automatically when your document is saved
+- Refresh the list
 
 ![screenshot](screenshots/_Extension_Development_Host__-_extension_ts_—_vscode-azureappservice.png)
+
+## Configuration
+
+- `vscode-symbolexplorer.showExplorer`: Show or hide Symbol Explorer in Explorer View (defaults to true, requires window reload)
+- `vscode-symbolexplorer.showExplorerDebug`: Show or hide the Symbol Explorer in Debug View (defaults to false, requires window reload)
 
 ## Requirements
 
@@ -20,9 +27,15 @@ Depending on what extension is providing the symbols for your file, you may have
 
 ## Contributions
 
-1. Icon provided by [Font Awesome](https://fontawesome.com/icons/space-shuttle?style=solid) ([License](https://fontawesome.com/license))
+- Icon provided by [Font Awesome](https://fontawesome.com/icons/space-shuttle?style=solid) ([License](https://fontawesome.com/license))
 
 ## Release Notes
+
+### 0.0.7
+
+- Symbols are grouped by container
+- Added Activity Bar view
+- Added config values to Explorer view and Debug view
 
 ### 0.0.6
 

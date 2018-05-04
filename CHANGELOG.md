@@ -2,6 +2,12 @@
 
 All notable changes to the "vscode-symbol-explorer" extension will be documented in this file.
 
+## [0.0.7]
+
+- Symbols are grouped by container
+- Added Activity Bar view
+- Added config values to Explorer view and Debug view
+
 ## [0.0.6]
 
 - Fix for a bad merge
