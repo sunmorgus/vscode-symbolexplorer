@@ -59,30 +59,36 @@ export class SymbolsTreeDataProvider implements vscode.TreeDataProvider<vscode.S
 
     getTreeItem(element: vscode.SymbolInformation): vscode.TreeItem {
         let symbolTreeViewItem: SymbolTreeViewItem;
+
         if (element.kind === 4) {
-            symbolTreeViewItem = new SymbolTreeViewItem(element.name, element.kind, element.location, vscode.TreeItemCollapsibleState.Expanded, this.context);
+            const hasChildren: boolean = this.symbols.some(symbol => {
+                return symbol.containerName === element.name;
+            });
+
+            symbolTreeViewItem = new SymbolTreeViewItem(element.name, element.kind, element.location, hasChildren ? vscode.TreeItemCollapsibleState.Expanded : vscode.TreeItemCollapsibleState.None, this.context);
         }
         else {
             symbolTreeViewItem = new SymbolTreeViewItem(element.name, element.kind, element.location, vscode.TreeItemCollapsibleState.None, this.context);
+        }
 
-            let command: string;
-            switch (this.activeView) {
-                case 0:
-                    command = 'symbolExplorer.navigateSymbol';
-                    break;
-                case 1:
-                    command = 'symbolExplorerDebug.navigateSymbol';
-                    break;
-                case 2:
-                    command = 'symbolExplorerView.navigateSymbol';
-                    break;
-            }
+        let command: string;
 
-            symbolTreeViewItem.command = {
-                command: command,
-                title: '',
-                arguments: [element.location.range]
-            }
+        switch (this.activeView) {
+            case 0:
+                command = 'symbolExplorer.navigateSymbol';
+                break;
+            case 1:
+                command = 'symbolExplorerDebug.navigateSymbol';
+                break;
+            case 2:
+                command = 'symbolExplorerView.navigateSymbol';
+                break;
+        }
+
+        symbolTreeViewItem.command = {
+            command: command,
+            title: '',
+            arguments: [element.location.range]
         }
 
         return symbolTreeViewItem;
@@ -90,18 +96,21 @@ export class SymbolsTreeDataProvider implements vscode.TreeDataProvider<vscode.S
 
     getChildren(element: vscode.SymbolInformation): Thenable<vscode.SymbolInformation[]> {
         if (element) {
+            // element is a container, so we find the child items
             return new Promise(resolve => {
                 const childSymbols: Array<vscode.SymbolInformation> = this.symbols.filter(symbol => {
-                    return symbol.kind >= 5;
+                    return symbol.containerName === element.name;
                 });
+
                 resolve(childSymbols);
             })
         }
         else {
+            // element
             return new Promise(resolve => {
                 this.getSymbolsForActiveEditor().then(() => {
                     const parentSymbols: Array<vscode.SymbolInformation> = this.symbols.filter(symbol => {
-                        return symbol.kind <= 4;
+                        return symbol.containerName === "";
                     });
 
                     if (parentSymbols.length > 0) {
