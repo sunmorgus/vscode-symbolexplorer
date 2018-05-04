@@ -1,26 +1,47 @@
 'use strict';
-import { ExtensionContext, commands, window } from 'vscode';
-import { SymbolsTreeDataProvider } from './symbolsTreeDataProvider';
+import { ExtensionContext, commands, window, workspace } from 'vscode';
+import { SymbolsTreeDataProvider, View } from './symbolsTreeDataProvider';
 
 export function activate(context: ExtensionContext) {
-    console.log('Extension activated!!');
-    const symbolsTreeDataProvider = new SymbolsTreeDataProvider(context, false);
-    context.subscriptions.push(window.registerTreeDataProvider('symbolExplorer', symbolsTreeDataProvider));
+    const extensionPrefix: string = 'vscode-symbolexplorer';
+    const enum configurationSettings {
+        showExplorer = 'showExplorer',
+        showExplorerDebug = 'showExplorerDebug'
+    }
 
-    const navigateSymbolCommand = commands.registerCommand('symbolExplorer.navigateSymbol', range => { symbolsTreeDataProvider.select(range); });
-    context.subscriptions.push(navigateSymbolCommand);
+    const showExplorer: boolean = workspace.getConfiguration(extensionPrefix).get(configurationSettings.showExplorer);
+    const showExplorerDebug: boolean = workspace.getConfiguration(extensionPrefix).get(configurationSettings.showExplorerDebug);
 
-    const refreshSymbolCommand = commands.registerCommand('symbolExplorer.refresh', () => symbolsTreeDataProvider.refresh());
-    context.subscriptions.push(refreshSymbolCommand);
+    const symbolsTreeDataProviderView = new SymbolsTreeDataProvider(context, View.View);
+    context.subscriptions.push(window.registerTreeDataProvider('symbolExplorerView', symbolsTreeDataProviderView));
 
-    const symbolsTreeDataProviderDebug = new SymbolsTreeDataProvider(context, true);
-    context.subscriptions.push(window.registerTreeDataProvider('symbolExplorerDebug', symbolsTreeDataProviderDebug));
+    const navigateSymbolCommandView = commands.registerCommand('symbolExplorerView.navigateSymbol', range => { symbolsTreeDataProviderView.select(range); });
+    context.subscriptions.push(navigateSymbolCommandView);
 
-    const navigateSymbolCommandDebug = commands.registerCommand('symbolExplorerDebug.navigateSymbol', range => { symbolsTreeDataProviderDebug.select(range); });
-    context.subscriptions.push(navigateSymbolCommandDebug);
+    const refreshSymbolCommandView = commands.registerCommand('symbolExplorerView.refresh', () => symbolsTreeDataProviderView.refresh());
+    context.subscriptions.push(refreshSymbolCommandView);
 
-    const refreshSymbolCommandDebug = commands.registerCommand('symbolExplorerDebug.refresh', () => symbolsTreeDataProviderDebug.refresh());
-    context.subscriptions.push(refreshSymbolCommandDebug);
+    if (showExplorer) {
+        const symbolsTreeDataProvider = new SymbolsTreeDataProvider(context, View.Explorer);
+        context.subscriptions.push(window.registerTreeDataProvider('symbolExplorer', symbolsTreeDataProvider));
+
+        const navigateSymbolCommand = commands.registerCommand('symbolExplorer.navigateSymbol', range => { symbolsTreeDataProvider.select(range); });
+        context.subscriptions.push(navigateSymbolCommand);
+
+        const refreshSymbolCommand = commands.registerCommand('symbolExplorer.refresh', () => symbolsTreeDataProvider.refresh());
+        context.subscriptions.push(refreshSymbolCommand);
+    }
+
+    if (showExplorerDebug) {
+        const symbolsTreeDataProviderDebug = new SymbolsTreeDataProvider(context, View.Debug);
+        context.subscriptions.push(window.registerTreeDataProvider('symbolExplorerDebug', symbolsTreeDataProviderDebug));
+
+        const navigateSymbolCommandDebug = commands.registerCommand('symbolExplorerDebug.navigateSymbol', range => { symbolsTreeDataProviderDebug.select(range); });
+        context.subscriptions.push(navigateSymbolCommandDebug);
+
+        const refreshSymbolCommandDebug = commands.registerCommand('symbolExplorerDebug.refresh', () => symbolsTreeDataProviderDebug.refresh());
+        context.subscriptions.push(refreshSymbolCommandDebug);
+    }
 }
 
 // this method is called when your extension is deactivated
