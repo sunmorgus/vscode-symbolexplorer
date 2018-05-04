@@ -20,8 +20,9 @@
         "spade"
     ],
     "activationEvents": [
-        "onCommand:symbolExplorer.navigateSymbol",
-        "onView:symbolExplorer"
+        "onView:symbolExplorer",
+        "onView:symbolExplorerDebug",
+        "onView:symbolExplorerView"
     ],
     "main": "./out/src/extension",
     "repository": {
@@ -29,6 +30,15 @@
         "url": "https://github.com/sunmorgus/vscode-symbolexplorer.git"
     },
     "contributes": {
+        "viewsContainers": {
+            "activitybar": [
+                {
+                    "id": "symbolExplorerView",
+                    "title": "Symbol Explorer",
+                    "icon": "resources/space-shuttle.svg"
+                }
+            ]
+        },
         "commands": [
             {
                 "command": "symbolExplorer.navigateSymbol",
@@ -53,18 +63,38 @@
                     "light": "resources/light/refresh.svg",
                     "dark": "resources/dark/refresh.svg"
                 }
+            },
+            {
+                "command": "symbolExplorerView.navigateSymbol",
+                "title": "Navigate to Symbol"
+            },
+            {
+                "command": "symbolExplorerView.refresh",
+                "title": "Refresh",
+                "icon": {
+                    "light": "resources/light/refresh.svg",
+                    "dark": "resources/dark/refresh.svg"
+                }
             }
         ],
         "views": {
             "debug": [
                 {
                     "id": "symbolExplorerDebug",
-                    "name": "Symbol Explorer"
+                    "name": "Symbol Explorer",
+                    "when": "inDebugMode && config.vscode-symbolexplorer.showExplorerDebug == true"
                 }
             ],
             "explorer": [
                 {
                     "id": "symbolExplorer",
+                    "name": "Symbol Explorer",
+                    "when": "config.vscode-symbolexplorer.showExplorer == true"
+                }
+            ],
+            "symbolExplorerView": [
+                {
+                    "id": "symbolExplorerView",
                     "name": "Symbol Explorer"
                 }
             ]
@@ -80,8 +110,28 @@
                     "command": "symbolExplorerDebug.refresh",
                     "when": "view == symbolExplorerDebug",
                     "group": "navigation"
+                },
+                {
+                    "command": "symbolExplorerView.refresh",
+                    "when": "view == symbolExplorerView",
+                    "group": "navigation"
                 }
             ]
+        },
+        "configuration": {
+            "title": "Symbol Explorer",
+            "properties": {
+                "vscode-symbolexplorer.showExplorer": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Show or hide Symbol Explorer in Explorer View (requires Reload)"
+                },
+                "vscode-symbolexplorer.showExplorerDebug": {
+                    "type": "boolean",
+                    "default": false,
+                    "description": "Show or hide the Symbol Explorer in Debug View (requires Reload)"
+                }
+            }
         }
     },
     "scripts": {

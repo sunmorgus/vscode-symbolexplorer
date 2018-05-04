@@ -32,14 +32,21 @@ export enum SymbolKind {
     TypeParameter = 25
 }
 
-export class SymbolsTreeDataProvider implements vscode.TreeDataProvider<SymbolTreeViewItem> {
-    private _onDidChangeTreeData: vscode.EventEmitter<SymbolTreeViewItem | undefined> = new vscode.EventEmitter<SymbolTreeViewItem | undefined>();
-    readonly onDidChangeTreeData: vscode.Event<SymbolTreeViewItem | undefined> = this._onDidChangeTreeData.event;
+export enum View {
+    Explorer = 0,
+    Debug = 1,
+    View = 2
+}
+
+export class SymbolsTreeDataProvider implements vscode.TreeDataProvider<vscode.SymbolInformation> {
+    private _onDidChangeTreeData: vscode.EventEmitter<vscode.SymbolInformation | undefined> = new vscode.EventEmitter<vscode.SymbolInformation | undefined>();
+    readonly onDidChangeTreeData: vscode.Event<vscode.SymbolInformation | undefined> = this._onDidChangeTreeData.event;
 
     private autoRefresh: boolean = true;
     private editor: vscode.TextEditor;
+    private symbols: Array<vscode.SymbolInformation>;
 
-    constructor(private context: vscode.ExtensionContext, private isDebugView: boolean) {
+    constructor(private context: vscode.ExtensionContext, private activeView: View) {
         vscode.window.onDidChangeActiveTextEditor(() => this.onActiveEditorChanged());
         vscode.workspace.onDidSaveTextDocument(() => this.onDocumentChanged());
         this.onActiveEditorChanged();
@@ -50,14 +57,72 @@ export class SymbolsTreeDataProvider implements vscode.TreeDataProvider<SymbolTr
         this._onDidChangeTreeData.fire();
     }
 
-    getTreeItem(element: SymbolTreeViewItem): vscode.TreeItem {
-        return element;
+    getTreeItem(element: vscode.SymbolInformation): vscode.TreeItem {
+        let symbolTreeViewItem: SymbolTreeViewItem;
+
+        if (element.kind === 4) {
+            const hasChildren: boolean = this.symbols.some(symbol => {
+                return symbol.containerName === element.name;
+            });
+
+            symbolTreeViewItem = new SymbolTreeViewItem(element.name, element.kind, element.location, hasChildren ? vscode.TreeItemCollapsibleState.Expanded : vscode.TreeItemCollapsibleState.None, this.context);
+        }
+        else {
+            symbolTreeViewItem = new SymbolTreeViewItem(element.name, element.kind, element.location, vscode.TreeItemCollapsibleState.None, this.context);
+        }
+
+        let command: string;
+
+        switch (this.activeView) {
+            case 0:
+                command = 'symbolExplorer.navigateSymbol';
+                break;
+            case 1:
+                command = 'symbolExplorerDebug.navigateSymbol';
+                break;
+            case 2:
+                command = 'symbolExplorerView.navigateSymbol';
+                break;
+        }
+
+        symbolTreeViewItem.command = {
+            command: command,
+            title: '',
+            arguments: [element.location.range]
+        }
+
+        return symbolTreeViewItem;
     }
 
-    getChildren(): Thenable<SymbolTreeViewItem[]> {
-        return new Promise(resolve => {
-            resolve(this.getSymbolsForActiveEditor());
-        });
+    getChildren(element: vscode.SymbolInformation): Thenable<vscode.SymbolInformation[]> {
+        if (element) {
+            // element is a container, so we find the child items
+            return new Promise(resolve => {
+                const childSymbols: Array<vscode.SymbolInformation> = this.symbols.filter(symbol => {
+                    return symbol.containerName === element.name;
+                });
+
+                resolve(childSymbols);
+            })
+        }
+        else {
+            // element
+            return new Promise(resolve => {
+                this.getSymbolsForActiveEditor().then(() => {
+                    const parentSymbols: Array<vscode.SymbolInformation> = this.symbols.filter(symbol => {
+                        return symbol.containerName === "";
+                    });
+
+                    if (parentSymbols.length > 0) {
+                        resolve(parentSymbols);
+                    }
+
+                    resolve(this.symbols);
+                }).catch(reject => {
+                    reject();
+                })
+            });
+        }
     }
 
     select(range: vscode.Range) {
@@ -84,42 +149,18 @@ export class SymbolsTreeDataProvider implements vscode.TreeDataProvider<SymbolTr
             this._onDidChangeTreeData.fire();
     }
 
-    private async getSymbolsForActiveEditor(): Promise<SymbolTreeViewItem[]> {
-        let symbolsTreeViewItems: SymbolTreeViewItem[] = new Array<SymbolTreeViewItem>();
-
+    private async getSymbolsForActiveEditor(): Promise<void> {
         if (this.editor && this.editor.document.uri) {
-            let symbols: Array<vscode.SymbolInformation> | undefined;
-
             try {
-                symbols = await vscode.commands.executeCommand<Array<vscode.SymbolInformation>>(
+                this.symbols = await vscode.commands.executeCommand<Array<vscode.SymbolInformation>>(
                     'vscode.executeDocumentSymbolProvider',
                     this.editor.document.uri
                 );
             }
             catch (e) {
                 console.log(e);
-                const errorSymbol = new SymbolTreeViewItem("No symbols found in file", 0, undefined, vscode.TreeItemCollapsibleState.None, this.context);
-                symbolsTreeViewItems.push(errorSymbol);
-            }
-
-            if (symbols) {
-                const toSymbol = (symbol: vscode.SymbolInformation): SymbolTreeViewItem => {
-                    return new SymbolTreeViewItem(symbol.name, symbol.kind, symbol.location, vscode.TreeItemCollapsibleState.None, this.context, {
-                        command: this.isDebugView ? 'symbolExplorerDebug.navigateSymbol' : 'symbolExplorer.navigateSymbol',
-                        title: '',
-                        arguments: [symbol.location.range]
-                    });
-                }
-
-                symbolsTreeViewItems = symbols.map(symbol => toSymbol(symbol));
             }
         }
-        else {
-            const noSymbols = new SymbolTreeViewItem("No symbols found in file", 0, undefined, vscode.TreeItemCollapsibleState.None, this.context);
-            symbolsTreeViewItems.push(noSymbols);
-        }
-
-        return symbolsTreeViewItems;
     }
 }
 
@@ -130,13 +171,13 @@ class SymbolTreeViewItem extends vscode.TreeItem {
         public readonly location: vscode.Location | undefined,
         public readonly collapsibleState: vscode.TreeItemCollapsibleState,
         private context: vscode.ExtensionContext,
-        public readonly command?: vscode.Command
+        public command?: vscode.Command
     ) {
         super(label, collapsibleState);
     }
 
     get tooltip(): string {
-        return `${this.label}-${this.kind}`
+        return `${this.label} - ${this.kind}`
     }
 
     private getIconPath(): { light: string, dark: string } {
