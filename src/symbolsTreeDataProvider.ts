@@ -2,6 +2,7 @@
 
 import * as vscode from "vscode";
 import * as path from 'path';
+import { Utils } from './utils';
 
 export enum SymbolKind {
     File = 0,
@@ -98,13 +99,20 @@ export class SymbolsTreeDataProvider implements vscode.TreeDataProvider<SymbolTr
             }
             catch (e) {
                 console.log(e);
-                const errorSymbol = new SymbolTreeViewItem("No symbols found in file", 0, undefined, vscode.TreeItemCollapsibleState.None, this.context);
+                const errorSymbol = new SymbolTreeViewItem("No symbols found in file", -1, 0, undefined, vscode.TreeItemCollapsibleState.None, this.context);
                 symbolsTreeViewItems.push(errorSymbol);
             }
 
             if (symbols) {
                 const toSymbol = (symbol: vscode.SymbolInformation): SymbolTreeViewItem => {
-                    return new SymbolTreeViewItem(symbol.name, symbol.kind, symbol.location, vscode.TreeItemCollapsibleState.None, this.context, {
+                    let codeComplexity = -1;
+                    if (symbol.kind == 5 || symbol.kind == 11) {
+                        let utils = new Utils();
+                        let codeBlock = utils.getCodeBlocks(symbol, this.editor.document);
+                        codeComplexity = utils.calculateComplexity(codeBlock);
+                    }
+                    let label: string = codeComplexity > 0 ? `${symbol.name} - ${codeComplexity}` : symbol.name;
+                    return new SymbolTreeViewItem(label, codeComplexity, symbol.kind, symbol.location, vscode.TreeItemCollapsibleState.None, this.context, {
                         command: this.isDebugView ? 'symbolExplorerDebug.navigateSymbol' : 'symbolExplorer.navigateSymbol',
                         title: '',
                         arguments: [symbol.location.range]
@@ -115,7 +123,7 @@ export class SymbolsTreeDataProvider implements vscode.TreeDataProvider<SymbolTr
             }
         }
         else {
-            const noSymbols = new SymbolTreeViewItem("No symbols found in file", 0, undefined, vscode.TreeItemCollapsibleState.None, this.context);
+            const noSymbols = new SymbolTreeViewItem("No symbols found in file", -1, 0, undefined, vscode.TreeItemCollapsibleState.None, this.context);
             symbolsTreeViewItems.push(noSymbols);
         }
 
@@ -126,6 +134,7 @@ export class SymbolsTreeDataProvider implements vscode.TreeDataProvider<SymbolTr
 class SymbolTreeViewItem extends vscode.TreeItem {
     constructor(
         public readonly label: string,
+        public readonly complexity: number,
         private kind: number,
         public readonly location: vscode.Location | undefined,
         public readonly collapsibleState: vscode.TreeItemCollapsibleState,
@@ -150,7 +159,7 @@ class SymbolTreeViewItem extends vscode.TreeItem {
 
     iconPath = this.getIconPath();
 
-    contextValue = 'symbolTreeViewItem'
+    contextValue = 'symbolTreeViewItem';
 
     private toCssClassName(kind: SymbolKind): string {
         const _fromMapping: { [n: number]: string } = Object.create(null);
