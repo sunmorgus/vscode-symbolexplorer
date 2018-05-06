@@ -23,6 +23,8 @@ A simple vscode extension to provide and explorer view of the symbols in the act
 
 - `vscode-symbolexplorer.showExplorer`: Show or hide Symbol Explorer in Explorer View (defaults to true, requires window reload)
 - `vscode-symbolexplorer.showExplorerDebug`: Show or hide the Symbol Explorer in Debug View (defaults to false, requires window reload)
+- `vscode-symbolexplorer.autoStart`: Whether to auto-check for symbols on start up
+- `vscode-symbolexplorer.autoStartDelay`: Delay auto-start to allow language server to start
 
 ## Requirements
 
@@ -38,6 +40,11 @@ The only requirement is having a document open that supports symbols.
 - Icon provided by [Font Awesome](https://fontawesome.com/icons/space-shuttle?style=solid) ([License](https://fontawesome.com/license))
 
 ## Release Notes
+
+### 0.0.9
+
+- Added auto start settings
+- Added telemetry reporter (respects global vscode telemetry setting)
 
 ### 0.0.8
 

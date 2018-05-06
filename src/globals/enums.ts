@@ -38,3 +38,10 @@ export enum Sort {
     Asc = 1,
     Desc = 2
 }
+
+export enum configurationSettings {
+    showExplorer = 'showExplorer',
+    showExplorerDebug = 'showExplorerDebug',
+    autoStart = 'autoStart',
+    autoStartDelay = 'autoStartDelay'
+}

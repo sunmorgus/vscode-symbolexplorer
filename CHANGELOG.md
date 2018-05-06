@@ -2,6 +2,11 @@
 
 All notable changes to the "vscode-symbol-explorer" extension will be documented in this file.
 
+## [0.0.9]
+
+- Added auto start settings
+- Added telemetry reporter (respects global vscode telemetry setting)
+
 ## [0.0.8]
 
 - Added buttons to sort symbols alphabetically

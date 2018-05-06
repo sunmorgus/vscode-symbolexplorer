@@ -4,6 +4,9 @@ import * as vscode from "vscode";
 import * as path from 'path';
 import { Utils } from './globals/utils';
 import { View, SymbolKind, Sort } from "./globals/enums";
+import { isNumber } from "util";
+import { window } from "vscode";
+import TelemetryReporter from "vscode-extension-telemetry";
 
 export class SymbolsTreeDataProvider implements vscode.TreeDataProvider<vscode.SymbolInformation> {
     private _onDidChangeTreeData: vscode.EventEmitter<vscode.SymbolInformation | undefined> = new vscode.EventEmitter<vscode.SymbolInformation | undefined>();
@@ -14,15 +17,29 @@ export class SymbolsTreeDataProvider implements vscode.TreeDataProvider<vscode.S
     private symbols: Array<vscode.SymbolInformation>;
     private utils: Utils;
     private sort: Sort;
+    private reporter: TelemetryReporter;
 
-    constructor(private context: vscode.ExtensionContext, private activeView: View) {
+    constructor(private context: vscode.ExtensionContext, private activeView: View, autoStart: boolean, autoStartDelay: number, reporter: TelemetryReporter) {
+        this.reporter = reporter;
         this.utils = new Utils();
         vscode.window.onDidChangeActiveTextEditor(() => this.onActiveEditorChanged());
         vscode.workspace.onDidSaveTextDocument(() => this.onDocumentChanged());
-        this.onActiveEditorChanged();
+
+        if (autoStart) {
+            if (isNumber(autoStartDelay) && autoStartDelay > 0 && autoStartDelay < 10000) {
+                setTimeout(() => this.onActiveEditorChanged(), autoStartDelay);
+            }
+            else {
+                window.showErrorMessage(`Auto-Start delay setting (${autoStartDelay}) is not valid; please choose a number between 0 and 10000`);
+            }
+        }
     }
 
     refresh(sort?: Sort): void {
+        if (sort) {
+            this.reporter.sendTelemetryEvent('sorting', { 'sort': sort.toString() })
+        }
+
         this.sort = sort ? sort : Sort.None;
         this.editor = vscode.window.activeTextEditor;
         this._onDidChangeTreeData.fire();
