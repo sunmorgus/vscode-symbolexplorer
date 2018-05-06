@@ -2,6 +2,12 @@
 
 All notable changes to the "vscode-symbol-explorer" extension will be documented in this file.
 
+## [0.0.8]
+
+- Added buttons to sort symbols alphabetically
+- Experimental support for showing code complexity, in the tooltip of the symbol
+- Fix for [#8](https://github.com/sunmorgus/vscode-symbolexplorer/issues/8)
+
 ## [0.0.7]
 
 - Symbols are grouped by container

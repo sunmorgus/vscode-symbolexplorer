@@ -6,6 +6,7 @@ A simple vscode extension to provide and explorer view of the symbols in the act
 
 - Views for Explorer, Debugger, and now a separate of it's own!
 - Lists all symbols in the active document
+- Sort symbols alphabetically
 - Symbols are grouped by container (i.e. methods within a class are grouped under that class)
 - Symbols update automatically when your document is saved
 - Refresh the list
@@ -29,13 +30,20 @@ The only requirement is having a document open that supports symbols.
 
 ## Known Issues
 
-Depending on what extension is providing the symbols for your file, you may have to hit the refresh button after the extension has finished loading (for instance, with the C# extension, once omnisharp has finished loading your project)
+- Code complexity scoring has only been tested on C# and may not yet work properly in other languages
+- Depending on what extension is providing the symbols for your file, you may have to hit the refresh button after the extension has finished loading (for instance, with the C# extension, once omnisharp has finished loading your project)
 
 ## Contributions
 
 - Icon provided by [Font Awesome](https://fontawesome.com/icons/space-shuttle?style=solid) ([License](https://fontawesome.com/license))
 
 ## Release Notes
+
+### 0.0.8
+
+- Added buttons to sort symbols alphabetically
+- Experimental support for showing code complexity, in the tooltip of the symbol
+- Fix for [#8](https://github.com/sunmorgus/vscode-symbolexplorer/issues/8)
 
 ### 0.0.7
 
