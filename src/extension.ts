@@ -1,7 +1,7 @@
 'use strict';
 import { ExtensionContext, commands, window, workspace } from 'vscode';
 import { SymbolsTreeDataProvider } from './symbolsTreeDataProvider';
-import { View } from './globals/enums';
+import { View, Sort } from './globals/enums';
 
 export function activate(context: ExtensionContext) {
     const extensionPrefix: string = 'vscode-symbolexplorer';
@@ -26,16 +26,24 @@ export function activate(context: ExtensionContext) {
 
 function setupDebugView(context: ExtensionContext) {
     // Setup Tree Data Provider
-    const symbolsTreeDataProviderDebug = new SymbolsTreeDataProvider(context, View.Debug);
-    context.subscriptions.push(window.registerTreeDataProvider('symbolExplorerDebug', symbolsTreeDataProviderDebug));
+    const symbolsTreeDataProvider = new SymbolsTreeDataProvider(context, View.Debug);
+    context.subscriptions.push(window.registerTreeDataProvider('symbolExplorerDebug', symbolsTreeDataProvider));
 
     // Setup Navigate Command
-    const navigateSymbolCommandDebug = commands.registerCommand('symbolExplorerDebug.navigateSymbol', range => { symbolsTreeDataProviderDebug.select(range); });
-    context.subscriptions.push(navigateSymbolCommandDebug);
+    const navigateSymbolCommand = commands.registerCommand('symbolExplorerDebug.navigateSymbol', range => { symbolsTreeDataProvider.select(range); });
+    context.subscriptions.push(navigateSymbolCommand);
 
     // Setup Refresh Button
-    const refreshSymbolCommandDebug = commands.registerCommand('symbolExplorerDebug.refresh', () => symbolsTreeDataProviderDebug.refresh());
-    context.subscriptions.push(refreshSymbolCommandDebug);
+    const refreshSymbolCommand = commands.registerCommand('symbolExplorerDebug.refresh', () => symbolsTreeDataProvider.refresh());
+    context.subscriptions.push(refreshSymbolCommand);
+
+    // Setup Sort Asc Button
+    const sortAscSymbolCommand = commands.registerCommand('symbolExplorerDebug.sortAsc', () => symbolsTreeDataProvider.refresh(Sort.Asc));
+    context.subscriptions.push(sortAscSymbolCommand);
+
+    // Setup Sort Desc Button
+    const sortDescSymbolCommand = commands.registerCommand('symbolExplorerDebug.sortDesc', () => symbolsTreeDataProvider.refresh(Sort.Desc));
+    context.subscriptions.push(sortDescSymbolCommand);
 }
 
 function setupExplorerView(context: ExtensionContext) {
@@ -50,20 +58,36 @@ function setupExplorerView(context: ExtensionContext) {
     // Setup Refresh Button
     const refreshSymbolCommand = commands.registerCommand('symbolExplorer.refresh', () => symbolsTreeDataProvider.refresh());
     context.subscriptions.push(refreshSymbolCommand);
+
+    // Setup Sort Asc Button
+    const sortAscSymbolCommand = commands.registerCommand('symbolExplorer.sortAsc', () => symbolsTreeDataProvider.refresh(Sort.Asc));
+    context.subscriptions.push(sortAscSymbolCommand);
+
+    // Setup Sort Desc Button
+    const sortDescSymbolCommand = commands.registerCommand('symbolExplorer.sortDesc', () => symbolsTreeDataProvider.refresh(Sort.Desc));
+    context.subscriptions.push(sortDescSymbolCommand);
 }
 
 function setupActivityBarView(context: ExtensionContext) {
     // Setup Tree Data Provider
-    const symbolsTreeDataProviderView = new SymbolsTreeDataProvider(context, View.View);
-    context.subscriptions.push(window.registerTreeDataProvider('symbolExplorerView', symbolsTreeDataProviderView));
+    const symbolsTreeDataProvider = new SymbolsTreeDataProvider(context, View.View);
+    context.subscriptions.push(window.registerTreeDataProvider('symbolExplorerView', symbolsTreeDataProvider));
 
     // Setup Navigate Command
-    const navigateSymbolCommandView = commands.registerCommand('symbolExplorerView.navigateSymbol', range => { symbolsTreeDataProviderView.select(range); });
-    context.subscriptions.push(navigateSymbolCommandView);
+    const navigateSymbolCommand = commands.registerCommand('symbolExplorerView.navigateSymbol', range => { symbolsTreeDataProvider.select(range); });
+    context.subscriptions.push(navigateSymbolCommand);
 
     // Setup Refresh Button
-    const refreshSymbolCommandView = commands.registerCommand('symbolExplorerView.refresh', () => symbolsTreeDataProviderView.refresh());
-    context.subscriptions.push(refreshSymbolCommandView);
+    const refreshSymbolCommand = commands.registerCommand('symbolExplorerView.refresh', () => symbolsTreeDataProvider.refresh());
+    context.subscriptions.push(refreshSymbolCommand);
+
+    // Setup Sort Asc Button
+    const sortAscSymbolCommand = commands.registerCommand('symbolExplorerView.sortAsc', () => symbolsTreeDataProvider.refresh(Sort.Asc));
+    context.subscriptions.push(sortAscSymbolCommand);
+
+    // Setup Sort Desc Button
+    const sortDescSymbolCommand = commands.registerCommand('symbolExplorerView.sortDesc', () => symbolsTreeDataProvider.refresh(Sort.Desc));
+    context.subscriptions.push(sortDescSymbolCommand);
 }
 
 // this method is called when your extension is deactivated

@@ -1,5 +1,6 @@
 import { SymbolInformation, Range, TextDocument, TextEditor, commands } from "vscode";
 import * as sortOn from 'sort-on';
+import { Sort } from "./enums";
 
 export class Utils {
     calculateComplexity(functionText: string): number {
@@ -82,7 +83,7 @@ export class Utils {
         return "";
     }
 
-    async getSymbolsForActiveEditor(editor: TextEditor): Promise<Array<SymbolInformation>> {
+    async getSymbolsForActiveEditor(editor: TextEditor, sort: Sort): Promise<Array<SymbolInformation>> {
         let sortedSymbols: Array<SymbolInformation> = [];
         if (editor && editor.document.uri) {
             try {
@@ -91,7 +92,17 @@ export class Utils {
                     editor.document.uri
                 );
 
-                sortedSymbols = sortOn(unsorted, ['-kind', 'name']);
+                switch (sort) {
+                    case 1: // asc
+                        sortedSymbols = sortOn(unsorted, ['-kind', 'name']);
+                        break;
+                    case 2: // desc
+                        sortedSymbols = sortOn(unsorted, ['-kind', '-name']);
+                        break;
+                    default:
+                        sortedSymbols = unsorted;
+                        break;
+                }
             }
             catch (e) {
                 console.log(e);

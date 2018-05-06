@@ -3,7 +3,7 @@
 import * as vscode from "vscode";
 import * as path from 'path';
 import { Utils } from './globals/utils';
-import { View, SymbolKind } from "./globals/enums";
+import { View, SymbolKind, Sort } from "./globals/enums";
 
 export class SymbolsTreeDataProvider implements vscode.TreeDataProvider<vscode.SymbolInformation> {
     private _onDidChangeTreeData: vscode.EventEmitter<vscode.SymbolInformation | undefined> = new vscode.EventEmitter<vscode.SymbolInformation | undefined>();
@@ -13,6 +13,7 @@ export class SymbolsTreeDataProvider implements vscode.TreeDataProvider<vscode.S
     private editor: vscode.TextEditor;
     private symbols: Array<vscode.SymbolInformation>;
     private utils: Utils;
+    private sort: Sort;
 
     constructor(private context: vscode.ExtensionContext, private activeView: View) {
         this.utils = new Utils();
@@ -21,7 +22,8 @@ export class SymbolsTreeDataProvider implements vscode.TreeDataProvider<vscode.S
         this.onActiveEditorChanged();
     }
 
-    refresh(): void {
+    refresh(sort?: Sort): void {
+        this.sort = sort ? sort : Sort.None;
         this.editor = vscode.window.activeTextEditor;
         this._onDidChangeTreeData.fire();
     }
@@ -36,7 +38,7 @@ export class SymbolsTreeDataProvider implements vscode.TreeDataProvider<vscode.S
             codeComplexity = utils.calculateComplexity(codeBlock);
         }
 
-        if (element.containerName === "") {
+        if (this.isParent(element)) {
             const hasChildren: boolean = this.symbols.some(symbol => {
                 return symbol.containerName === element.name;
             });
@@ -84,11 +86,11 @@ export class SymbolsTreeDataProvider implements vscode.TreeDataProvider<vscode.S
         else {
             // element
             return new Promise(resolve => {
-                this.utils.getSymbolsForActiveEditor(this.editor).then(sortedSymbols => {
+                this.utils.getSymbolsForActiveEditor(this.editor, this.sort).then(sortedSymbols => {
                     this.symbols = sortedSymbols;
 
                     const parentSymbols: Array<vscode.SymbolInformation> = sortedSymbols.filter(symbol => {
-                        return symbol.containerName === "";
+                        return this.isParent(symbol);
                     });
 
                     if (parentSymbols.length > 0) {
@@ -114,10 +116,14 @@ export class SymbolsTreeDataProvider implements vscode.TreeDataProvider<vscode.S
         );
     }
 
+    private isParent(element: vscode.SymbolInformation) {
+        return element.containerName === "" || element.containerName === path.basename(this.editor.document.fileName);
+    }
+
     private onActiveEditorChanged(): void {
         if (vscode.window.activeTextEditor) {
             if (vscode.window.activeTextEditor.document.uri.scheme === 'file') {
-                this.refresh();
+                this.refresh(this.sort ? this.sort : Sort.None);
             }
         }
     }

@@ -32,3 +32,9 @@ export enum View {
     Debug = 1,
     View = 2
 }
+
+export enum Sort {
+    None = 0,
+    Asc = 1,
+    Desc = 2
+}
