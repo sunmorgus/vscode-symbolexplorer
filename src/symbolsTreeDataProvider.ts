@@ -2,41 +2,8 @@
 
 import * as vscode from "vscode";
 import * as path from 'path';
-
-export enum SymbolKind {
-    File = 0,
-    Module = 1,
-    Namespace = 2,
-    Package = 3,
-    Class = 4,
-    Method = 5,
-    Property = 6,
-    Field = 7,
-    Constructor = 8,
-    Enum = 9,
-    Interface = 10,
-    Function = 11,
-    Variable = 12,
-    Constant = 13,
-    String = 14,
-    Number = 15,
-    Boolean = 16,
-    Array = 17,
-    Object = 18,
-    Key = 19,
-    Null = 20,
-    EnumMember = 21,
-    Struct = 22,
-    Event = 23,
-    Operator = 24,
-    TypeParameter = 25
-}
-
-export enum View {
-    Explorer = 0,
-    Debug = 1,
-    View = 2
-}
+import { Utils } from './globals/utils';
+import { View, SymbolKind, Sort } from "./globals/enums";
 
 export class SymbolsTreeDataProvider implements vscode.TreeDataProvider<vscode.SymbolInformation> {
     private _onDidChangeTreeData: vscode.EventEmitter<vscode.SymbolInformation | undefined> = new vscode.EventEmitter<vscode.SymbolInformation | undefined>();
@@ -45,14 +12,18 @@ export class SymbolsTreeDataProvider implements vscode.TreeDataProvider<vscode.S
     private autoRefresh: boolean = true;
     private editor: vscode.TextEditor;
     private symbols: Array<vscode.SymbolInformation>;
+    private utils: Utils;
+    private sort: Sort;
 
     constructor(private context: vscode.ExtensionContext, private activeView: View) {
+        this.utils = new Utils();
         vscode.window.onDidChangeActiveTextEditor(() => this.onActiveEditorChanged());
         vscode.workspace.onDidSaveTextDocument(() => this.onDocumentChanged());
         this.onActiveEditorChanged();
     }
 
-    refresh(): void {
+    refresh(sort?: Sort): void {
+        this.sort = sort ? sort : Sort.None;
         this.editor = vscode.window.activeTextEditor;
         this._onDidChangeTreeData.fire();
     }
@@ -60,15 +31,22 @@ export class SymbolsTreeDataProvider implements vscode.TreeDataProvider<vscode.S
     getTreeItem(element: vscode.SymbolInformation): vscode.TreeItem {
         let symbolTreeViewItem: SymbolTreeViewItem;
 
-        if (element.kind === 4) {
+        let codeComplexity = 0;
+        if (element.kind == 5 || element.kind == 11) {
+            let utils = new Utils();
+            let codeBlock = utils.getCodeBlocks(element, this.editor.document);
+            codeComplexity = utils.calculateComplexity(codeBlock);
+        }
+
+        if (this.isParent(element)) {
             const hasChildren: boolean = this.symbols.some(symbol => {
                 return symbol.containerName === element.name;
             });
 
-            symbolTreeViewItem = new SymbolTreeViewItem(element.name, element.kind, element.location, hasChildren ? vscode.TreeItemCollapsibleState.Expanded : vscode.TreeItemCollapsibleState.None, this.context);
+            symbolTreeViewItem = new SymbolTreeViewItem(element.name, codeComplexity, element.kind, element.location, hasChildren ? vscode.TreeItemCollapsibleState.Expanded : vscode.TreeItemCollapsibleState.None, this.context);
         }
         else {
-            symbolTreeViewItem = new SymbolTreeViewItem(element.name, element.kind, element.location, vscode.TreeItemCollapsibleState.None, this.context);
+            symbolTreeViewItem = new SymbolTreeViewItem(element.name, codeComplexity, element.kind, element.location, vscode.TreeItemCollapsibleState.None, this.context);
         }
 
         let command: string;
@@ -108,16 +86,18 @@ export class SymbolsTreeDataProvider implements vscode.TreeDataProvider<vscode.S
         else {
             // element
             return new Promise(resolve => {
-                this.getSymbolsForActiveEditor().then(() => {
-                    const parentSymbols: Array<vscode.SymbolInformation> = this.symbols.filter(symbol => {
-                        return symbol.containerName === "";
+                this.utils.getSymbolsForActiveEditor(this.editor, this.sort).then(sortedSymbols => {
+                    this.symbols = sortedSymbols;
+
+                    const parentSymbols: Array<vscode.SymbolInformation> = sortedSymbols.filter(symbol => {
+                        return this.isParent(symbol);
                     });
 
                     if (parentSymbols.length > 0) {
                         resolve(parentSymbols);
                     }
 
-                    resolve(this.symbols);
+                    resolve(sortedSymbols);
                 }).catch(reject => {
                     reject();
                 })
@@ -136,10 +116,14 @@ export class SymbolsTreeDataProvider implements vscode.TreeDataProvider<vscode.S
         );
     }
 
+    private isParent(element: vscode.SymbolInformation) {
+        return element.containerName === "" || element.containerName === path.basename(this.editor.document.fileName);
+    }
+
     private onActiveEditorChanged(): void {
         if (vscode.window.activeTextEditor) {
             if (vscode.window.activeTextEditor.document.uri.scheme === 'file') {
-                this.refresh();
+                this.refresh(this.sort ? this.sort : Sort.None);
             }
         }
     }
@@ -148,25 +132,12 @@ export class SymbolsTreeDataProvider implements vscode.TreeDataProvider<vscode.S
         if (this.autoRefresh)
             this._onDidChangeTreeData.fire();
     }
-
-    private async getSymbolsForActiveEditor(): Promise<void> {
-        if (this.editor && this.editor.document.uri) {
-            try {
-                this.symbols = await vscode.commands.executeCommand<Array<vscode.SymbolInformation>>(
-                    'vscode.executeDocumentSymbolProvider',
-                    this.editor.document.uri
-                );
-            }
-            catch (e) {
-                console.log(e);
-            }
-        }
-    }
 }
 
 class SymbolTreeViewItem extends vscode.TreeItem {
     constructor(
         public readonly label: string,
+        public readonly complexity: number,
         private kind: number,
         public readonly location: vscode.Location | undefined,
         public readonly collapsibleState: vscode.TreeItemCollapsibleState,
@@ -177,7 +148,8 @@ class SymbolTreeViewItem extends vscode.TreeItem {
     }
 
     get tooltip(): string {
-        return `${this.label} - ${this.kind}`
+        const name = this.toCssClassName(this.kind);
+        return this.complexity > 0 ? `Kind: ${name} - Complexity: ${this.complexity}` : `Kind: ${name}`;
     }
 
     private getIconPath(): { light: string, dark: string } {
@@ -191,7 +163,7 @@ class SymbolTreeViewItem extends vscode.TreeItem {
 
     iconPath = this.getIconPath();
 
-    contextValue = 'symbolTreeViewItem'
+    contextValue = 'symbolTreeViewItem';
 
     private toCssClassName(kind: SymbolKind): string {
         const _fromMapping: { [n: number]: string } = Object.create(null);
