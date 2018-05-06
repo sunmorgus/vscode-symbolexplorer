@@ -2,6 +2,7 @@
 
 import * as vscode from "vscode";
 import * as path from 'path';
+import * as sortOn from 'sort-on';
 
 export enum SymbolKind {
     File = 0,
@@ -60,7 +61,7 @@ export class SymbolsTreeDataProvider implements vscode.TreeDataProvider<vscode.S
     getTreeItem(element: vscode.SymbolInformation): vscode.TreeItem {
         let symbolTreeViewItem: SymbolTreeViewItem;
 
-        if (element.kind === 4) {
+        if (element.containerName === "") {
             const hasChildren: boolean = this.symbols.some(symbol => {
                 return symbol.containerName === element.name;
             });
@@ -152,10 +153,12 @@ export class SymbolsTreeDataProvider implements vscode.TreeDataProvider<vscode.S
     private async getSymbolsForActiveEditor(): Promise<void> {
         if (this.editor && this.editor.document.uri) {
             try {
-                this.symbols = await vscode.commands.executeCommand<Array<vscode.SymbolInformation>>(
+                const unsorted: Array<vscode.SymbolInformation> = await vscode.commands.executeCommand<Array<vscode.SymbolInformation>>(
                     'vscode.executeDocumentSymbolProvider',
                     this.editor.document.uri
                 );
+
+                this.symbols = sortOn(unsorted, ['-kind', 'name']);
             }
             catch (e) {
                 console.log(e);
