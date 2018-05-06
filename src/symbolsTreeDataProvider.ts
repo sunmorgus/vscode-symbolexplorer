@@ -3,6 +3,7 @@
 import * as vscode from "vscode";
 import * as path from 'path';
 import * as sortOn from 'sort-on';
+import { Utils } from './utils';
 
 export enum SymbolKind {
     File = 0,
@@ -170,6 +171,7 @@ export class SymbolsTreeDataProvider implements vscode.TreeDataProvider<vscode.S
 class SymbolTreeViewItem extends vscode.TreeItem {
     constructor(
         public readonly label: string,
+        public readonly complexity: number,
         private kind: number,
         public readonly location: vscode.Location | undefined,
         public readonly collapsibleState: vscode.TreeItemCollapsibleState,
@@ -194,7 +196,7 @@ class SymbolTreeViewItem extends vscode.TreeItem {
 
     iconPath = this.getIconPath();
 
-    contextValue = 'symbolTreeViewItem'
+    contextValue = 'symbolTreeViewItem';
 
     private toCssClassName(kind: SymbolKind): string {
         const _fromMapping: { [n: number]: string } = Object.create(null);
