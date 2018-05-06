@@ -1,4 +1,5 @@
-import { SymbolInformation, Range, TextDocument } from "vscode";
+import { SymbolInformation, Range, TextDocument, TextEditor, commands } from "vscode";
+import * as sortOn from 'sort-on';
 
 export class Utils {
     calculateComplexity(functionText: string): number {
@@ -79,5 +80,24 @@ export class Utils {
         }
 
         return "";
+    }
+
+    async getSymbolsForActiveEditor(editor: TextEditor): Promise<Array<SymbolInformation>> {
+        let sortedSymbols: Array<SymbolInformation> = [];
+        if (editor && editor.document.uri) {
+            try {
+                const unsorted: Array<SymbolInformation> = await commands.executeCommand<Array<SymbolInformation>>(
+                    'vscode.executeDocumentSymbolProvider',
+                    editor.document.uri
+                );
+
+                sortedSymbols = sortOn(unsorted, ['-kind', 'name']);
+            }
+            catch (e) {
+                console.log(e);
+            }
+        }
+
+        return sortedSymbols;
     }
 }

@@ -45,6 +45,22 @@
                 "title": "Navigate to Symbol"
             },
             {
+                "command": "symbolExplorer.sortAsc",
+                "title": "Sort Ascending",
+                "icon": {
+                    "light": "resources/light/sort-alpha-up.svg",
+                    "dark": "resources/dark/sort-alpha-up.svg"
+                }
+            },
+            {
+                "command": "symbolExplorer.sortDesc",
+                "title": "Sort Descending",
+                "icon": {
+                    "light": "resources/light/sort-alpha-down.svg",
+                    "dark": "resources/dark/sort-alpha-down.svg"
+                }
+            },
+            {
                 "command": "symbolExplorer.refresh",
                 "title": "Refresh",
                 "icon": {
@@ -57,6 +73,22 @@
                 "title": "Navigate to Symbol"
             },
             {
+                "command": "symbolExplorerDebug.sortAsc",
+                "title": "Sort Ascending",
+                "icon": {
+                    "light": "resources/light/sort-alpha-up.svg",
+                    "dark": "resources/dark/sort-alpha-up.svg"
+                }
+            },
+            {
+                "command": "symbolExplorerDebug.sortDesc",
+                "title": "Sort Descending",
+                "icon": {
+                    "light": "resources/light/sort-alpha-down.svg",
+                    "dark": "resources/dark/sort-alpha-down.svg"
+                }
+            },
+            {
                 "command": "symbolExplorerDebug.refresh",
                 "title": "Refresh",
                 "icon": {
@@ -67,6 +99,22 @@
             {
                 "command": "symbolExplorerView.navigateSymbol",
                 "title": "Navigate to Symbol"
+            },
+            {
+                "command": "symbolExplorerView.sortAsc",
+                "title": "Sort Ascending",
+                "icon": {
+                    "light": "resources/light/sort-alpha-up.svg",
+                    "dark": "resources/dark/sort-alpha-up.svg"
+                }
+            },
+            {
+                "command": "symbolExplorerView.sortDesc",
+                "title": "Sort Descending",
+                "icon": {
+                    "light": "resources/light/sort-alpha-down.svg",
+                    "dark": "resources/dark/sort-alpha-down.svg"
+                }
             },
             {
                 "command": "symbolExplorerView.refresh",
@@ -101,6 +149,36 @@
         },
         "menus": {
             "view/title": [
+                {
+                    "command": "symbolExplorer.sortAsc",
+                    "when": "view == symbolExplorer",
+                    "group": "navigation"
+                },
+                {
+                    "command": "symbolExplorerDebug.sortAsc",
+                    "when": "view == symbolExplorerDebug",
+                    "group": "navigation"
+                },
+                {
+                    "command": "symbolExplorerView.sortAsc",
+                    "when": "view == symbolExplorerView",
+                    "group": "navigation"
+                },
+                {
+                    "command": "symbolExplorer.sortDesc",
+                    "when": "view == symbolExplorer",
+                    "group": "navigation"
+                },
+                {
+                    "command": "symbolExplorerDebug.sortDesc",
+                    "when": "view == symbolExplorerDebug",
+                    "group": "navigation"
+                },
+                {
+                    "command": "symbolExplorerView.sortDesc",
+                    "when": "view == symbolExplorerView",
+                    "group": "navigation"
+                },
                 {
                     "command": "symbolExplorer.refresh",
                     "when": "view == symbolExplorer",
