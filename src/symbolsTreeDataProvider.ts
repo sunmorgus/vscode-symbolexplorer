@@ -36,10 +36,6 @@ export class SymbolsTreeDataProvider implements vscode.TreeDataProvider<vscode.S
     }
 
     refresh(sort?: Sort): void {
-        if (sort) {
-            this.reporter.sendTelemetryEvent('sorting', { 'sort': sort.toString() })
-        }
-
         this.sort = sort ? sort : Sort.None;
         this.editor = vscode.window.activeTextEditor;
         this._onDidChangeTreeData.fire();
@@ -103,7 +99,7 @@ export class SymbolsTreeDataProvider implements vscode.TreeDataProvider<vscode.S
         else {
             // element
             return new Promise(resolve => {
-                this.utils.getSymbolsForActiveEditor(this.editor, this.sort).then(sortedSymbols => {
+                this.utils.getSymbolsForActiveEditor(this.editor, this.sort, this.reporter).then(sortedSymbols => {
                     this.symbols = sortedSymbols;
 
                     const parentSymbols: Array<vscode.SymbolInformation> = sortedSymbols.filter(symbol => {

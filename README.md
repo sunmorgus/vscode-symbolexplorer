@@ -41,6 +41,10 @@ The only requirement is having a document open that supports symbols.
 
 ## Release Notes
 
+### 0.0.10
+
+- Adjust telemetry reporter events a bit
+
 ### 0.0.9
 
 - Added auto start settings

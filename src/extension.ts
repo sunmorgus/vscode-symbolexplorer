@@ -13,7 +13,6 @@ let reporter;
 export function activate(context: ExtensionContext) {
     reporter = new TelemetryReporter(extensionPrefix, extensionVersion, key);
     context.subscriptions.push(reporter);
-    reporter.sendTelemetryEvent('extension activated!');
 
     const config: WorkspaceConfiguration = workspace.getConfiguration(extensionPrefix);
     const showExplorer: boolean = config.get(configurationSettings.showExplorer);
@@ -21,7 +20,7 @@ export function activate(context: ExtensionContext) {
     const autoStart: boolean = config.get(configurationSettings.autoStart);
     const autoStartDelay: number = config.get(configurationSettings.autoStartDelay);
 
-    reporter.sendTelemetryEvent('configs', {
+    reporter.sendTelemetryEvent('Extension Activated', {
         'showExplorer': showExplorer,
         'showExplorerDebug': showExplorerDebug,
         'autoStart': autoStart,

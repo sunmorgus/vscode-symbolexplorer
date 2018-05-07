@@ -1,6 +1,7 @@
 import { SymbolInformation, Range, TextDocument, TextEditor, commands } from "vscode";
 import * as sortOn from 'sort-on';
 import { Sort } from "./enums";
+import TelemetryReporter from "vscode-extension-telemetry";
 
 export class Utils {
     calculateComplexity(functionText: string): number {
@@ -83,7 +84,7 @@ export class Utils {
         return "";
     }
 
-    async getSymbolsForActiveEditor(editor: TextEditor, sort: Sort): Promise<Array<SymbolInformation>> {
+    async getSymbolsForActiveEditor(editor: TextEditor, sort: Sort, reporter: TelemetryReporter): Promise<Array<SymbolInformation>> {
         let sortedSymbols: Array<SymbolInformation> = [];
         if (editor && editor.document.uri) {
             try {
@@ -94,18 +95,33 @@ export class Utils {
 
                 switch (sort) {
                     case 1: // asc
+                        reporter.sendTelemetryEvent('ActiveEditorChanged', {
+                            'LanguageId': editor.document.languageId,
+                            'SortBy': 'Ascending'
+                        });
                         sortedSymbols = sortOn(unsorted, ['-kind', 'name']);
                         break;
                     case 2: // desc
+                        reporter.sendTelemetryEvent('ActiveEditorChanged', {
+                            'LanguageId': editor.document.languageId,
+                            'SortBy': 'Descending'
+                        });
                         sortedSymbols = sortOn(unsorted, ['-kind', '-name']);
                         break;
                     default:
+                        reporter.sendTelemetryEvent('ActiveEditorChanged', {
+                            'LanguageId': editor.document.languageId,
+                            'SortBy': 'None'
+                        });
                         sortedSymbols = unsorted;
                         break;
                 }
             }
-            catch (e) {
-                console.log(e);
+            catch (err) {
+                reporter.sendTelemetryEvent('ActiveEditorChanged', {
+                    'LanguageId': editor.document.languageId,
+                    'Exception': JSON.stringify(err)
+                });
             }
         }
 
