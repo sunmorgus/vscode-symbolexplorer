@@ -2,6 +2,10 @@
 
 All notable changes to the "vscode-symbol-explorer" extension will be documented in this file.
 
+## [0.0.12]
+
+- Minor bug fix for parent symbols without children
+
 ## [0.0.11]
 
 - Add defaultSort preference

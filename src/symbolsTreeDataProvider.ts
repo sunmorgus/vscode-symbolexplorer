@@ -66,7 +66,7 @@ export class SymbolsTreeDataProvider implements vscode.TreeDataProvider<vscode.S
             if (hasChildren && this.collapse) {
                 collapsibleItemState = vscode.TreeItemCollapsibleState.Collapsed;
             }
-            else {
+            else if (hasChildren && !this.collapse) {
                 collapsibleItemState = vscode.TreeItemCollapsibleState.Expanded;
             }
 
