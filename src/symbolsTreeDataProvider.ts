@@ -44,6 +44,7 @@ export class SymbolsTreeDataProvider implements vscode.TreeDataProvider<vscode.S
 
     refresh(sort?: Sort, collapse: boolean = false): void {
         this.collapse = collapse;
+        this.collapse; // fake it till you make it
         this.sort = sort ? sort : Sort[this.defaultSort];
         this.editor = vscode.window.activeTextEditor;
         this._onDidChangeTreeData.fire();
