@@ -2,7 +2,7 @@
     "name": "vscode-symbolexplorer",
     "displayName": "Symbol Explorer",
     "description": "A simple explorer view of the symbols in the currently active editor",
-    "version": "0.0.10",
+    "version": "0.0.11",
     "publisher": "nickdemayo",
     "icon": "resources/space-shuttle.png",
     "engines": {
@@ -69,6 +69,14 @@
                 }
             },
             {
+                "command": "symbolExplorer.collapse",
+                "title": "Collapse",
+                "icon": {
+                    "light": "resources/light/minus-square.svg",
+                    "dark": "resources/dark/minus-square.svg"
+                }
+            },
+            {
                 "command": "symbolExplorerDebug.navigateSymbol",
                 "title": "Navigate to Symbol"
             },
@@ -97,6 +105,14 @@
                 }
             },
             {
+                "command": "symbolExplorerDebug.collapse",
+                "title": "Collapse",
+                "icon": {
+                    "light": "resources/light/minus-square.svg",
+                    "dark": "resources/dark/minus-square.svg"
+                }
+            },
+            {
                 "command": "symbolExplorerView.navigateSymbol",
                 "title": "Navigate to Symbol"
             },
@@ -122,6 +138,14 @@
                 "icon": {
                     "light": "resources/light/refresh.svg",
                     "dark": "resources/dark/refresh.svg"
+                }
+            },
+            {
+                "command": "symbolExplorerView.collapse",
+                "title": "Collapse",
+                "icon": {
+                    "light": "resources/light/minus-square.svg",
+                    "dark": "resources/dark/minus-square.svg"
                 }
             }
         ],
@@ -220,6 +244,16 @@
                     "maximum": 10000,
                     "minimum": 0,
                     "description": "Delay auto-start to allow language provider extensions time to start up (enter time in milliseconds)"
+                },
+                "vscode-symbolexplorer.defaultSort": {
+                    "type": "string",
+                    "default": "none",
+                    "description": "Choose default sort direction ('none', 'asc', 'desc') for the symbols in the view",
+                    "enum": [
+                        "none",
+                        "asc",
+                        "desc"
+                    ]
                 }
             }
         }

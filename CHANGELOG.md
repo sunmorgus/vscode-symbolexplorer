@@ -2,6 +2,11 @@
 
 All notable changes to the "vscode-symbol-explorer" extension will be documented in this file.
 
+## [0.0.11]
+
+- Add defaultSort preference
+- Tone down telemetry reporter events a bit
+
 ## [0.0.10]
 
 - Adjust telemetry reporter events a bit

@@ -34,14 +34,15 @@ export enum View {
 }
 
 export enum Sort {
-    None = 0,
-    Asc = 1,
-    Desc = 2
+    none = 0,
+    asc = 1,
+    desc = 2
 }
 
 export enum configurationSettings {
     showExplorer = 'showExplorer',
     showExplorerDebug = 'showExplorerDebug',
     autoStart = 'autoStart',
-    autoStartDelay = 'autoStartDelay'
+    autoStartDelay = 'autoStartDelay',
+    defaultSort = 'defaultSort'
 }

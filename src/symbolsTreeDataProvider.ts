@@ -17,11 +17,16 @@ export class SymbolsTreeDataProvider implements vscode.TreeDataProvider<vscode.S
     private symbols: Array<vscode.SymbolInformation>;
     private utils: Utils;
     private sort: Sort;
+    private defaultSort: string;
+    private collapse: boolean;
     private reporter: TelemetryReporter;
 
-    constructor(private context: vscode.ExtensionContext, private activeView: View, autoStart: boolean, autoStartDelay: number, reporter: TelemetryReporter) {
+    constructor(private context: vscode.ExtensionContext, private activeView: View, autoStart: boolean, autoStartDelay: number, defaultSort: string, reporter: TelemetryReporter) {
         this.reporter = reporter;
         this.utils = new Utils();
+        this.defaultSort = defaultSort;
+        this.sort = Sort[defaultSort];
+
         vscode.window.onDidChangeActiveTextEditor(() => this.onActiveEditorChanged());
         vscode.workspace.onDidSaveTextDocument(() => this.onDocumentChanged());
 
@@ -35,8 +40,9 @@ export class SymbolsTreeDataProvider implements vscode.TreeDataProvider<vscode.S
         }
     }
 
-    refresh(sort?: Sort): void {
-        this.sort = sort ? sort : Sort.None;
+    refresh(sort?: Sort, collapse: boolean = false): void {
+        this.collapse = collapse;
+        this.sort = sort ? sort : Sort[this.defaultSort];
         this.editor = vscode.window.activeTextEditor;
         this._onDidChangeTreeData.fire();
     }
@@ -56,7 +62,15 @@ export class SymbolsTreeDataProvider implements vscode.TreeDataProvider<vscode.S
                 return symbol.containerName === element.name;
             });
 
-            symbolTreeViewItem = new SymbolTreeViewItem(element.name, codeComplexity, element.kind, element.location, hasChildren ? vscode.TreeItemCollapsibleState.Expanded : vscode.TreeItemCollapsibleState.None, this.context);
+            let collapsibleItemState = vscode.TreeItemCollapsibleState.None;
+            if (hasChildren && this.collapse) {
+                collapsibleItemState = vscode.TreeItemCollapsibleState.Collapsed;
+            }
+            else {
+                collapsibleItemState = vscode.TreeItemCollapsibleState.Expanded;
+            }
+
+            symbolTreeViewItem = new SymbolTreeViewItem(element.name, codeComplexity, element.kind, element.location, collapsibleItemState, this.context);
         }
         else {
             symbolTreeViewItem = new SymbolTreeViewItem(element.name, codeComplexity, element.kind, element.location, vscode.TreeItemCollapsibleState.None, this.context);
@@ -109,8 +123,9 @@ export class SymbolsTreeDataProvider implements vscode.TreeDataProvider<vscode.S
                     if (parentSymbols.length > 0) {
                         resolve(parentSymbols);
                     }
-
-                    resolve(sortedSymbols);
+                    else {
+                        resolve(sortedSymbols);
+                    }
                 }).catch(reject => {
                     reject();
                 })
@@ -136,7 +151,7 @@ export class SymbolsTreeDataProvider implements vscode.TreeDataProvider<vscode.S
     private onActiveEditorChanged(): void {
         if (vscode.window.activeTextEditor) {
             if (vscode.window.activeTextEditor.document.uri.scheme === 'file') {
-                this.refresh(this.sort ? this.sort : Sort.None);
+                this.refresh(this.sort ? this.sort : Sort.none);
             }
         }
     }
@@ -153,7 +168,7 @@ class SymbolTreeViewItem extends vscode.TreeItem {
         public readonly complexity: number,
         private kind: number,
         public readonly location: vscode.Location | undefined,
-        public readonly collapsibleState: vscode.TreeItemCollapsibleState,
+        public collapsibleState: vscode.TreeItemCollapsibleState,
         private context: vscode.ExtensionContext,
         public command?: vscode.Command
     ) {

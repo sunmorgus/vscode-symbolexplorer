@@ -95,30 +95,18 @@ export class Utils {
 
                 switch (sort) {
                     case 1: // asc
-                        reporter.sendTelemetryEvent('ActiveEditorChanged', {
-                            'LanguageId': editor.document.languageId,
-                            'SortBy': 'Ascending'
-                        });
                         sortedSymbols = sortOn(unsorted, ['-kind', 'name']);
                         break;
                     case 2: // desc
-                        reporter.sendTelemetryEvent('ActiveEditorChanged', {
-                            'LanguageId': editor.document.languageId,
-                            'SortBy': 'Descending'
-                        });
                         sortedSymbols = sortOn(unsorted, ['-kind', '-name']);
                         break;
                     default:
-                        reporter.sendTelemetryEvent('ActiveEditorChanged', {
-                            'LanguageId': editor.document.languageId,
-                            'SortBy': 'None'
-                        });
                         sortedSymbols = unsorted;
                         break;
                 }
             }
             catch (err) {
-                reporter.sendTelemetryEvent('ActiveEditorChanged', {
+                reporter.sendTelemetryEvent('Error-ActiveEditorChanged', {
                     'LanguageId': editor.document.languageId,
                     'Exception': JSON.stringify(err)
                 });
