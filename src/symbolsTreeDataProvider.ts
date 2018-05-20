@@ -18,13 +18,15 @@ export class SymbolsTreeDataProvider implements vscode.TreeDataProvider<vscode.S
     private utils: Utils;
     private sort: Sort;
     private defaultSort: string;
+    private defaultState: string;
     private collapse: boolean;
     private reporter: TelemetryReporter;
 
-    constructor(private context: vscode.ExtensionContext, private activeView: View, autoStart: boolean, autoStartDelay: number, defaultSort: string, reporter: TelemetryReporter) {
+    constructor(private context: vscode.ExtensionContext, private activeView: View, autoStart: boolean, autoStartDelay: number, defaultSort: string, defaultState: string, reporter: TelemetryReporter) {
         this.reporter = reporter;
         this.utils = new Utils();
         this.defaultSort = defaultSort;
+        this.defaultState = defaultState;
         this.sort = Sort[defaultSort];
 
         vscode.window.onDidChangeActiveTextEditor(() => this.onActiveEditorChanged());
@@ -63,10 +65,10 @@ export class SymbolsTreeDataProvider implements vscode.TreeDataProvider<vscode.S
             });
 
             let collapsibleItemState = vscode.TreeItemCollapsibleState.None;
-            if (hasChildren && this.collapse) {
+            if (hasChildren && this.defaultState === 'collapsed') {
                 collapsibleItemState = vscode.TreeItemCollapsibleState.Collapsed;
             }
-            else if (hasChildren && !this.collapse) {
+            else if (hasChildren && this.defaultState === 'expanded') {
                 collapsibleItemState = vscode.TreeItemCollapsibleState.Expanded;
             }
 

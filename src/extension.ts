@@ -20,29 +20,31 @@ export function activate(context: ExtensionContext) {
     const autoStart: boolean = config.get(configurationSettings.autoStart);
     const autoStartDelay: number = config.get(configurationSettings.autoStartDelay);
     const defaultSort: string = config.get(configurationSettings.defaultSort);
+    const defaultState: string = config.get(configurationSettings.defaultState);
 
     reporter.sendTelemetryEvent('Extension Activated', {
         'showExplorer': showExplorer,
         'showExplorerDebug': showExplorerDebug,
         'autoStart': autoStart,
         'autoStartDelay': autoStartDelay,
-        'defaultSort': defaultSort
+        'defaultSort': defaultSort,
+        'defaultState': defaultState
     });
 
-    setupActivityBarView(context, autoStart, autoStartDelay, defaultSort);
+    setupActivityBarView(context, autoStart, autoStartDelay, defaultSort, defaultState);
 
     if (showExplorer) {
-        setupExplorerView(context, autoStart, autoStartDelay, defaultSort);
+        setupExplorerView(context, autoStart, autoStartDelay, defaultSort, defaultState);
     }
 
     if (showExplorerDebug) {
-        setupDebugView(context, autoStart, autoStartDelay, defaultSort);
+        setupDebugView(context, autoStart, autoStartDelay, defaultSort, defaultState);
     }
 }
 
-function setupDebugView(context: ExtensionContext, autoStart: boolean, autoStartDelay: number, defaultSort: string) {
+function setupDebugView(context: ExtensionContext, autoStart: boolean, autoStartDelay: number, defaultSort: string, defaultState: string) {
     // Setup Tree Data Provider
-    const symbolsTreeDataProvider = new SymbolsTreeDataProvider(context, View.Debug, autoStart, autoStartDelay, defaultSort, reporter);
+    const symbolsTreeDataProvider = new SymbolsTreeDataProvider(context, View.Debug, autoStart, autoStartDelay, defaultSort, defaultState, reporter);
     context.subscriptions.push(window.registerTreeDataProvider('symbolExplorerDebug', symbolsTreeDataProvider));
 
     // Setup Navigate Command
@@ -66,9 +68,9 @@ function setupDebugView(context: ExtensionContext, autoStart: boolean, autoStart
     // context.subscriptions.push(collapseSymbolCommand);
 }
 
-function setupExplorerView(context: ExtensionContext, autoStart: boolean, autoStartDelay: number, defaultSort: string) {
+function setupExplorerView(context: ExtensionContext, autoStart: boolean, autoStartDelay: number, defaultSort: string, defaultState: string) {
     // Setup Tree Data Provider
-    const symbolsTreeDataProvider = new SymbolsTreeDataProvider(context, View.Explorer, autoStart, autoStartDelay, defaultSort, reporter);
+    const symbolsTreeDataProvider = new SymbolsTreeDataProvider(context, View.Explorer, autoStart, autoStartDelay, defaultSort, defaultState, reporter);
     context.subscriptions.push(window.registerTreeDataProvider('symbolExplorer', symbolsTreeDataProvider));
 
     // Setup Navigate Command
@@ -92,9 +94,9 @@ function setupExplorerView(context: ExtensionContext, autoStart: boolean, autoSt
     // context.subscriptions.push(collapseSymbolCommand);
 }
 
-function setupActivityBarView(context: ExtensionContext, autoStart: boolean, autoStartDelay: number, defaultSort: string) {
+function setupActivityBarView(context: ExtensionContext, autoStart: boolean, autoStartDelay: number, defaultSort: string, defaultState: string) {
     // Setup Tree Data Provider
-    const symbolsTreeDataProvider = new SymbolsTreeDataProvider(context, View.View, autoStart, autoStartDelay, defaultSort, reporter);
+    const symbolsTreeDataProvider = new SymbolsTreeDataProvider(context, View.View, autoStart, autoStartDelay, defaultSort, defaultState, reporter);
     context.subscriptions.push(window.registerTreeDataProvider('symbolExplorerView', symbolsTreeDataProvider));
 
     // Setup Navigate Command

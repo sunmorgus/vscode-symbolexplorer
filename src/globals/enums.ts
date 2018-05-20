@@ -44,5 +44,6 @@ export enum configurationSettings {
     showExplorerDebug = 'showExplorerDebug',
     autoStart = 'autoStart',
     autoStartDelay = 'autoStartDelay',
-    defaultSort = 'defaultSort'
+    defaultSort = 'defaultSort',
+    defaultState = 'defaultState'
 }

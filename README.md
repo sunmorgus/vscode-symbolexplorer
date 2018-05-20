@@ -6,8 +6,8 @@ A simple vscode extension to provide an explorer view of the symbols in the acti
 
 - Views for Explorer, Debugger, and a separate Activity Bar view of it's own!
 - Lists all symbols in the active document
-- Sort symbols alphabetically
-- Symbols are grouped by container (i.e. methods within a class are grouped under that class)
+- Sort symbols alphabetically (default sort order can be set in preferences)
+- Symbols are grouped by container (i.e. methods within a class are grouped under that class) (default state can be set in preferences)
 - Symbols update automatically when your document is saved
 - Refresh the list
 
@@ -26,6 +26,7 @@ A simple vscode extension to provide an explorer view of the symbols in the acti
 - `vscode-symbolexplorer.autoStart`: Whether to auto-check for symbols on start up
 - `vscode-symbolexplorer.autoStartDelay`: Delay auto-start to allow language server to start
 - `vscode-symbolexplorer.defaultSort`: Choose default sort direction (`none`, `asc`, `desc`) for the symbols in the view
+- `vscode-symbolexplorer.defaultState`: Choose default state of parent symbols (`expanded` [default], `collapsed`)
 
 ## Requirements
 
@@ -45,7 +46,7 @@ The only requirement is having a document open that supports symbols.
 
 See Changelog
 
-## Todos:
+## Todo:
 
 1. Ability to reorganize you code with drag and drop
 1. Code complexity scoring for individual symbols
